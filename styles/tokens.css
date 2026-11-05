@@ -182,6 +182,10 @@
   /* ═══ Phone Shell ═══ */
   --phone-screen-width: 390px;
   --phone-screen-height: 844px;
+  /* 实测可用视口高度：由 ViewportHeightSync 用 window.innerHeight 写入 px。
+     移动端不再只依赖 100lvh——部分 Android WebView 会把 lvh 解析成异常值，
+     导致虚拟手机被压成顶部一条。100vh 是兜底，px 值优先。 */
+  --app-viewport-height: 100vh;
   --phone-screen-radius: 48px;
   --phone-frame-size: 4px;
   --phone-frame-color: #111111;

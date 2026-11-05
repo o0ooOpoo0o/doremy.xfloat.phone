@@ -546,12 +546,27 @@ export function SplashAnimation() {
     const onPageShow = () => startAnimation(isAnimating ? getElapsed() : pausedElapsed);
 
     startAnimation(0);
+    // 视口高度可能在首帧后由 ViewportHeightSync 修正（旧 WebView 的 vh/lvh
+    // 会先给出错误值），也可能因键盘/旋转变化。只监听 window.resize 不够：
+    // 舞台自身尺寸变化不会触发 window.resize，画布会停在旧的裁切尺寸上。
+    let resizeObserverPrimed = false;
+    const resizeObserver = typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver(() => {
+          if (!resizeObserverPrimed) {
+            resizeObserverPrimed = true;
+            return;
+          }
+          onResize();
+        });
+    resizeObserver?.observe(stage);
     window.addEventListener("resize", onResize);
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("pageshow", onPageShow);
     return () => {
       stopAnimation();
       window.clearTimeout(resizeTimer);
+      resizeObserver?.disconnect();
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("pageshow", onPageShow);

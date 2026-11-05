@@ -1085,20 +1085,25 @@
 
   :root {
     --phone-screen-width: 100vw;
-    --phone-screen-height: 100lvh;
+    /* 优先用 ViewportHeightSync 实测的 px。旧 Android WebView 对 100lvh
+       支持不完整时会把它算成异常小的值，单用 100lvh 会让整台虚拟手机
+       只剩顶部一条；100vh 作为兜底，保证最差情况也是整屏高度。 */
+    --phone-screen-height: var(--app-viewport-height, 100vh);
   }
 
   html,
   body {
     overflow: hidden;
     width: 100%;
-    height: 100lvh;
+    height: 100vh;
+    height: var(--app-viewport-height, 100vh);
     background: var(--c-page-body-bg);
   }
 
   .app-root {
     width: 100vw;
-    height: 100lvh;
+    height: 100vh;
+    height: var(--app-viewport-height, 100vh);
     padding: 0;
     display: flex;
     justify-content: flex-start;
@@ -1157,7 +1162,8 @@
 
   .app-root.splash-root {
     width: 100vw;
-    height: 100lvh;
+    height: 100vh;
+    height: var(--app-viewport-height, 100vh);
     margin: 0;
     padding: 0;
     display: flex;

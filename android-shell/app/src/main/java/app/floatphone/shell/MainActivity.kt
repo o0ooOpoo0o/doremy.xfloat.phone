@@ -21,6 +21,7 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Base64
 import android.view.WindowManager
+import android.view.ViewTreeObserver
 import androidx.core.app.NotificationCompat
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -382,9 +383,35 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // 冷启动带深链（如来电接听）直接加载目标；否则加载首页
-        webView.loadUrl(consumeOpenUrl(intent) ?: SITE_URL)
+        // 冷启动带深链（如来电接听）直接加载目标；否则加载首页。
+        // 必须等 WebView 完成首次非零布局再 loadUrl：部分 Android WebView（国产 ROM
+        // 旧内核尤其明显）在 0×0 尺寸下完成首帧布局后，会把 CSS 的 vh/lvh 参考高度
+        // 锁死成 0 或一条窄带；页面本身正常，但虚拟手机只剩顶部一条、正文全被裁掉。
+        // 这里只延后加载时机，不改变加载地址、导航或 JS 桥。
+        loadInitialUrl(consumeOpenUrl(intent) ?: SITE_URL)
         ensurePushService()
+    }
+
+    /** 等 WebView 有真实宽高后再加载首屏，避免 vh/lvh 在 0 尺寸下被锁定。 */
+    private fun loadInitialUrl(url: String) {
+        val tryLoad = {
+            if (webView.width > 0 && webView.height > 0) {
+                webView.loadUrl(url)
+                true
+            } else {
+                false
+            }
+        }
+        if (tryLoad()) return
+        webView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    if (webView.width <= 0 || webView.height <= 0) return
+                    webView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    webView.loadUrl(url)
+                }
+            },
+        )
     }
 
     /** singleTask：App 已在运行时（如全屏来电页接听）通过 onNewIntent 送达深链 */
