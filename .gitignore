@@ -28,3 +28,9 @@ tools/weixin-local-assistant/config.txt
 *.ts.net.crt
 *.ts.net.key
 /public/models/world-builder/
+
+# APK 签名材料：私钥/密钥库绝不能提交（GitHub Actions 用 Secrets 注入）
+*.jks
+*.keystore
+*.p12
+*.pfx

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { ChatPluginBootstrap } from "@/components/chat-plugin-bootstrap";
 import { ChatReasoningVisibilityController } from "@/components/chat-reasoning-visibility-controller";
+import { ColorMixCompat } from "@/components/color-mix-compat";
 import { CSSImportEnhancer } from "@/components/css-import-enhancer";
 import { PWAManifestInjector } from "@/components/pwa-manifest-injector";
 import { PWARegistrar } from "@/components/pwa-registrar";
@@ -46,6 +47,7 @@ export default function RootLayout({
       </head>
       <body>
         <ViewportHeightSync />
+        <ColorMixCompat />
         <PWAManifestInjector />
         <PWARegistrar />
         <CSSImportEnhancer />

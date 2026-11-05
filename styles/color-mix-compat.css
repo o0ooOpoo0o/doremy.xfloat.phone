@@ -1,0 +1,90 @@
+/* ── 旧版 Android WebView：color-mix() 兼容兜底 ─────────────────────────
+   Tailwind/Lightning CSS 会为 color-mix() 生成纯色兜底（例如 10% 的强调色
+   会退化成 100% 的强调色）。旧内核不支持 color-mix() 时就会直接用纯色：
+   图标背景和图标同色、标签背景和文字同色，看起来就是一整块图块。
+   ColorMixCompat 检测到这种情况时给 <html> 加 data-color-mix="off"，
+   下面的规则才生效；支持 color-mix() 的现代浏览器完全不受影响。 */
+
+html[data-color-mix="off"] .card-icon:not(.card-icon-glass) {
+  background: var(--c-page-body-bg) !important;
+  color: var(--icon-color, var(--c-text-title)) !important;
+}
+
+/* 设备动作/感知页的标签：纯色背景 + 同色文字会变成一整条色块 */
+html[data-color-mix="off"] .per-tag[data-tone="ok"] {
+  background: rgba(52, 199, 89, 0.14) !important;
+  color: #34c759 !important;
+}
+html[data-color-mix="off"] .per-tag[data-tone="warn"] {
+  background: rgba(255, 159, 10, 0.14) !important;
+  color: #ff9f0a !important;
+}
+html[data-color-mix="off"] .per-tag[data-tone="off"] {
+  background: rgba(160, 163, 168, 0.14) !important;
+  color: #7c7f84 !important;
+}
+html[data-color-mix="off"] .per-state[data-tone="on"] {
+  background: rgba(52, 199, 89, 0.14) !important;
+  color: #34c759 !important;
+}
+html[data-color-mix="off"] .per-state[data-tone="warn"] {
+  background: rgba(255, 159, 10, 0.14) !important;
+  color: #ff9f0a !important;
+}
+
+/* 不可用动作的灰色图标：别让灰色背景把灰色图标吃掉 */
+html[data-color-mix="off"] .per-cap[data-available="false"] .per-cap-icon {
+  background: rgba(160, 163, 168, 0.14) !important;
+  color: #7c7f84 !important;
+}
+
+/* 开关：确保轨道和圆点在任何旧内核下都可见 */
+html[data-color-mix="off"] .ui-toggle {
+  background: #e5e7eb !important;
+}
+html[data-color-mix="off"] .ui-toggle[data-checked] {
+  background: #34c759 !important;
+}
+html[data-color-mix="off"] .ui-toggle-knob {
+  background: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 通用按钮/标签：纯色兜底会和文字同色，这里退成透明底 + 正常文字色 */
+html[data-color-mix="off"] .ui-btn-outline {
+  background: transparent !important;
+  border-color: var(--c-card-border) !important;
+  color: var(--c-text) !important;
+}
+html[data-color-mix="off"] .ui-btn-soft-action,
+html[data-color-mix="off"] .ui-btn-soft-danger,
+html[data-color-mix="off"] .ui-chip,
+html[data-color-mix="off"] .ui-badge,
+html[data-color-mix="off"] .ui-status-tag,
+html[data-color-mix="off"] .ui-tag {
+  background: transparent !important;
+}
+
+/* 主屏玻璃图标：fallback 会把 6% 的主题色铺成 100% 的紫色；
+   旧内核改成半透明白玻璃 + 深色 glyph，保证图标可见且不串色。 */
+html[data-color-mix="off"] .phone-shell[data-icon-effect="glass"] .icon-glyph-box {
+  background: rgba(255, 255, 255, 0.52) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    0 6px 18px rgba(0, 0, 0, 0.1) !important;
+}
+html[data-color-mix="off"] .phone-shell .icon-glyph {
+  color: #2f343b !important;
+}
+html[data-color-mix="off"] .phone-shell[data-icon-effect="glass"] .dock:not([data-skinned]) {
+  background: rgba(255, 255, 255, 0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+html[data-color-mix="off"] .phone-shell[data-icon-effect="glass"] .folder-mini {
+  background: rgba(255, 255, 255, 0.5) !important;
+}
+html[data-color-mix="off"] .folder-mini-glyph {
+  color: #2f343b !important;
+}
